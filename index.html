@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم WaeilStore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #FD79A8;
+            --accent: #00CEFF;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #D63031;
+            --light: #F7F7F7;
+            --dark: #2D3436;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .admin-header h1 {
+            color: var(--primary);
+        }
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        .products-management {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .add-product-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .add-product-btn:hover {
+            background-color: #00a884;
+        }
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .products-table th, .products-table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        .products-table th {
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: 700;
+        }
+        .products-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+        .edit-btn {
+            color: var(--primary);
+        }
+        .delete-btn {
+            color: var(--danger);
+        }
+        .edit-btn:hover, .delete-btn:hover {
+            transform: scale(1.2);
+        }
+        .product-form-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .product-form {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .image-preview {
+            margin-top: 10px;
+        }
+        .image-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .save-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cancel-btn {
+            background-color: #ddd;
+            color: var(--dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .save-btn:hover {
+            background-color: #5d4acf;
+        }
+        .cancel-btn:hover {
+            background-color: #ccc;
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            display: none;
+            z-index: 1100;
+        }
+        .success {
+            background-color: var(--success);
+        }
+        .error {
+            background-color: var(--danger);
+        }
+        @media (max-width: 768px) {
+            .products-table {
+                display: block;
+                overflow-x: auto;
+            }
+            .product-form {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>لوحة تحكم WaeilStore</h1>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+        <div class="products-management">
+            <h2 class="section-title">إدارة المنتجات</h2>
+            <button class="add-product-btn" id="add-product-btn">
+                <i class="fas fa-plus"></i> إضافة منتج جديد
+            </button>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>الصورة</th>
+                        <th>اسم المنتج</th>
+                        <th>الفئة</th>
+                        <th>السعر</th>
+                        <th>الكمية</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table-body">
+                    <!-- سيتم ملؤها بالمنتجات من Firebase -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- نموذج إضافة/تعديل منتج -->
+    <div class="product-form-container" id="product-form-container">
+        <div class="product-form">
+            <h2 id="form-title">إضافة منتج جديد</h2>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label for="product-name">اسم المنتج</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-category">الفئة</label>
+                    <select id="product-category" required>
+                        <option value="الهواتف">الهواتف</option>
+                        <option value="الإلكترونيات">الإلكترونيات</option>
+                        <option value="الألعاب">الألعاب</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">السعر (د.ت)</label>
+                    <input type="number" id="product-price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-old-price">السعر القديم (د.ت)</label>
+                    <input type="number" id="product-old-price" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="product-quantity">الكمية المتاحة</label>
+                    <input type="number" id="product-quantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-description">الوصف</label>
+                    <textarea id="product-description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-image">صورة المنتج (رابط URL)</label>
+                    <input type="text" id="product-image" placeholder="https://example.com/image.jpg">
+                    <div class="image-preview">
+                        <img id="image-preview" src="" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">حفظ</button>
+                    <button type="button" class="cancel-btn" id="cancel-form">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- إشعارات -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            addDoc, 
+            doc, 
+            deleteDoc, 
+            updateDoc,
+            getDoc 
+        } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        // تكوين Firebase الخاص بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-2XyDdRd96bMkeSczg8VjSjmU8421v28",
+            authDomain: "waelistore-88caa.firebaseapp.com",
+            projectId: "waelistore-88caa",
+            storageBucket: "waelistore-88caa.appspot.com",
+            messagingSenderId: "688527524354",
+            appId: "1:688527524354:web:f52aadb38526c6ea419db",
+            measurementId: "G-G21VJBD3RR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // عناصر DOM
+        const productsTableBody = document.getElementById('products-table-body');
+        const addProductBtn = document.getElementById('add-product-btn');
+        const productFormContainer = document.getElementById('product-form-container');
+        const productForm = document.getElementById('product-form');
+        const formTitle = document.getElementById('form-title');
+        const productIdInput = document.getElementById('product-id');
+        const cancelFormBtn = document.getElementById('cancel-form');
+        const notification = document.getElementById('notification');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // حالة التحرير
+        let isEditing = false;
+        let currentProductId = null;
+
+        // تحميل المنتجات عند بدء التشغيل
+        document.addEventListener('DOMContentLoaded', loadProducts);
+
+        // تحميل المنتجات من Firebase
+        async function loadProducts() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                productsTableBody.innerHTML = '';
+                
+                querySnapshot.forEach((doc) => {
+                    const product = doc.data();
+                    productsTableBody.innerHTML += `
+                        <tr>
+                            <td><img src="${product.image || 'https://via.placeholder.com/60'}" alt="${product.name}" class="product-img"></td>
+                            <td>${product.name}</td>
+                            <td>${product.category}</td>
+                            <td>${product.price?.toFixed(2) || '0.00'} د.ت</td>
+                            <td>${product.quantity || 0}</td>
+                            <td>
+                                <button class="action-btn edit-btn" data-id="${doc.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" data-id="${doc.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                // إضافة event listeners لأزرار التحرير والحذف
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', () => editProduct(btn.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', () => deleteProduct(btn.dataset.id));
+                });
+            } catch (error) {
+                showNotification('حدث خطأ أثناء تحميل المنتجات', 'error');
+                console.error("Error loading products:", error);
+            }
+        }
+
+        // فتح نموذج إضافة منتج
+        addProductBtn.addEventListener('click', () => {
+            isEditing = false;
+            currentProductId = null;
+            formTitle.textContent = 'إضافة منتج جديد';
+            productForm.reset();
+            productIdInput.value = '';
+            document.getElementById('image-preview').style.display = 'none';
+            productFormContainer.style.display = 'flex';
+        });
+
+        // إلغاء النموذج
+        cancelFormBtn.addEventListener('click', () => {
+            productFormContainer.style.display = 'none';
+        });
+
+        // تحرير منتج
+        async function editProduct(productId) {
+            try {
+                const docRef = doc(db, "products", productId);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const product = docSnap.data();
+                    isEditing = true;
+                    currentProductId = productId;
+                    formTitle.textContent = 'تعديل المنتج';
+
+                    // تعبئة النموذج ببيانات المنتج
+                    productIdInput.value = productId;
+                    document.getElementById('product-name').value = product.name || '';
+                    document.getElementById('product-category').value = product.category || 'الهواتف';
+                    document.getElementById('product-price').value = product.price || '';
+                    document.getElementById('product-old-price').value = product.oldPrice || '';
+                    document.getElementById('product-quantity').value = product.quantity || '';
+                    document.getElementById('product-description').value = product.description || '';
+                    document.getElementById('product-image').value = product.image || '';
+
+                    // عرض معاينة الصورة إذا كانت موجودة
+                    const imagePreview = document.getElementById('image-preview');
+                    if (product.image) {
+                        imagePreview.src = product.image;
+                        imagePreview.style.display = 'block';
+                    } else {
+                        imagePreview.style.display = 'none';
+                    }
+
+                    productFormContainer.style.display = 'flex';
+                } else {
+                    showNotification('المنتج غير موجود', 'error');
+                }
+            } catch (error) {
+                showNotification('حدث خطأ أثناء تحميل المنتج', 'error');
+                console.error("Error loading product:", error);
+            }
+        }
+
+        // حذف منتج
+        async function deleteProduct(productId) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+                try {
+                    await deleteDoc(doc(db, "products", productId));
+                    showNotification('تم حذف المنتج بنجاح', 'success');
+                    loadProducts();
+                } catch (error) {
+                    showNotification('حدث خطأ أثناء حذف المنتج', 'error');
+                    console.error("Error deleting product:", error);
+                }
+            }
+        }
+
+        // حفظ المنتج (إضافة/تعديل)
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // التحقق من صحة البيانات
+            const name = document.getElementById('product-name').value.trim();
+            const price = parseFloat(document.getElementById('product-price').value);
+            const quantity = parseInt(document.getElementById('product-quantity').value);
+            
+            if (!name || isNaN(price) || isNaN(quantity)) {
+                showNotification('الرجاء إدخال بيانات صحيحة (اسم، سعر، كمية)', 'error');
+                return;
+            }
+
+            const productData = {
+                name: name,
+                category: document.getElementById('product-category').value,
+                price: price,
+                quantity: quantity,
+                description: document.getElementById('product-description').value.trim(),
+                image: document.getElementById('product-image').value.trim(),
+                createdAt: new Date() // إضافة تاريخ الإنشاء
+            };
+
+            // إضافة السعر القديم إذا كان صحيحًا
+            const oldPrice = parseFloat(document.getElementById('product-old-price').value);
+            if (!isNaN(oldPrice)) {
+                productData.oldPrice = oldPrice;
+            }
+
+            try {
+                if (isEditing) {
+                    // تحديث المنتج
+                    await updateDoc(doc(db, "products", currentProductId), productData);
+                    showNotification('تم تحديث المنتج بنجاح', 'success');
+                } else {
+                    // إضافة منتج جديد
+                    await addDoc(collection(db, "products"), productData);
+                    showNotification('تم إضافة المنتج بنجاح', 'success');
+                }
+
+                // إغلاق النموذج وإعادة تحميل البيانات
+                productFormContainer.style.display = 'none';
+                await loadProducts();
+                
+            } catch (error) {
+                console.error("Error saving product:", error);
+                showNotification(`حدث خطأ: ${error.message}`, 'error');
+            }
+        });
+
+        // عرض الإشعارات
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // تسجيل الخروج
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // معاينة الصورة عند إدخال رابط
+        document.getElementById('product-image').addEventListener('input', function() {
+            const imageUrl = this.value;
+            const imagePreview = document.getElementById('image-preview');
+            
+            if (imageUrl) {
+                imagePreview.src = imageUrl;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+
+        // كود لفحص الأخطاء
+        window.addEventListener('error', function(e) {
+            console.error('Error:', e.message, 'at', e.filename, 'line:', e.lineno);
+            showNotification('حدث خطأ في الصفحة، الرجاء فحص الكونسول', 'error');
+        });
+    </script>
+</body>
+</html>
